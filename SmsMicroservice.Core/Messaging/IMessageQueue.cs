@@ -14,5 +14,6 @@ namespace SmsMicroservice.Core.Messaging
         /// </summary>
         public event AsyncEventHandler MessageReceived;
         public Task Publish<T>(T data);
+        public Task OnMessageReceived(QueueEventArgs eventArgs);
     }
 }

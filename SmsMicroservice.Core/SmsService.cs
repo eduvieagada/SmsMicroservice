@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SmsMicroservice.Core
 {
-    public class SmsService
+    public class SmsService : ISmsService
     {
         private readonly ILogger<SmsService> _logger;
         private readonly IMessageQueue _messageQueue;
@@ -46,7 +46,7 @@ namespace SmsMicroservice.Core
                 var smsCommand = JsonSerializer.Deserialize<SendSmsCommand>(text);
 
                 await SendSms(smsCommand);
-                _notificationBus.BroadCast(new SmsSent(smsCommand.PhoneNumber));
+                await _notificationBus.BroadCast(new SmsSent(smsCommand.PhoneNumber));
             }
             catch(Exception ex)
             {

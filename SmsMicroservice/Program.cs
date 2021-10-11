@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SmsMicroservice.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace SmsMicroservice
                 .ConfigureServices((hostContext, services) =>
                 {
                     // Add dependencies here
+                    services.AddScoped<ISmsService, SmsService>();
                     services.AddHostedService<Worker>();
                 });
     }

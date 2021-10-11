@@ -15,9 +15,9 @@ namespace SmsMicroservice
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly SmsService _smsService;
+        private readonly ISmsService _smsService;
 
-        public Worker(ILogger<Worker> logger, SmsService smsService)
+        public Worker(ILogger<Worker> logger, ISmsService smsService)
         {
             _logger = logger;
             _smsService = smsService;
