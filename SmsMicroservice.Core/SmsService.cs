@@ -45,8 +45,9 @@ namespace SmsMicroservice.Core
 
                 var smsCommand = JsonSerializer.Deserialize<SendSmsCommand>(text);
 
-                await SendSms(smsCommand);
-                await _notificationBus.BroadCast(new SmsSent(smsCommand.PhoneNumber));
+                var smsSentSuccessfully = await SendSms(smsCommand);
+                if (smsSentSuccessfully)
+                    await _notificationBus.BroadCast(new SmsSent(smsCommand.PhoneNumber));
             }
             catch(Exception ex)
             {
@@ -54,14 +55,22 @@ namespace SmsMicroservice.Core
             }
         }
 
-        private async Task SendSms(SendSmsCommand cmd)
+        private async Task<bool> SendSms(SendSmsCommand cmd)
         {
-            bool smsSent = await _smsProvider.Send(cmd.Message, cmd.PhoneNumber);
-
-            if (!smsSent)
+            if (cmd.errorSendingCount < 5)
             {
-                await _messageQueue.Publish(cmd);
+                bool smsSent = await _smsProvider.Send(cmd.Message, cmd.PhoneNumber);
+
+                if (!smsSent)
+                {
+                    cmd.errorSendingCount += 1;
+                    await _messageQueue.Publish(cmd);
+                }
+
+                return smsSent;
             }
+
+            return false;
         }
 
     }
